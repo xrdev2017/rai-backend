@@ -4,7 +4,7 @@ import { createMetarialsService, deleteMetarialsService, getAllMetarialsService,
 // Create Style
 export const creatMetarialsController = async (req, res) => {
   try {
-   
+
 
     const style = await createMetarialsService(req.body, req.headers.user_id);
     res.status(201).json({ success: true, style });
@@ -23,8 +23,8 @@ export const updateMetarialsController = async (req, res) => {
     const Metarials = await updateMetarialsService(req.params.id, req.body);
     if (!Metarials) {
       return res.status(404).json({ success: false, message: "Metarials not found" });
-    }console.log("Metarials")
-    res.status(200).json({ success: true,Metarials });
+    } console.log("Metarials");
+    res.status(200).json({ success: true, Metarials });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

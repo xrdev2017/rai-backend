@@ -16,6 +16,6 @@ CategoryRoute.get("/getAllCategory", getAllCategoryController);
 // Admin only: Manage styles
 CategoryRoute.post("/createCategory", authChecks, createCategoryController);
 CategoryRoute.put("/UpdateCategory/:id", authChecks, updateCategoryController);
-CategoryRoute.delete("/DeleteCategory/:id",authChecks, deleteCategoryController);
+CategoryRoute.delete("/DeleteCategory/:id", authChecks, deleteCategoryController);
 
 export default CategoryRoute;

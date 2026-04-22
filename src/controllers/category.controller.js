@@ -1,5 +1,5 @@
 import {
- 
+
   createCategoryService,
   deleteCategoryService,
   getAllCategoryService,
@@ -10,7 +10,7 @@ import {
 // Create Style
 export const createCategoryController = async (req, res) => {
   try {
-   
+
 
     const style = await createCategoryService(req.body, req.headers.user_id);
     res.status(201).json({ success: true, style });

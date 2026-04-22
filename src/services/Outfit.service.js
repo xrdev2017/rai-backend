@@ -3,14 +3,15 @@ import Outfit from "../models/Outfit.js";
 import Style from "../models/Style.js";
 import User from "../models/User.js";
 import { createNotification } from "./Notification.service.js";
+import axios from "axios";
 
 // Create Outfit
 export const createOutfit = async (userId, data) => {
-    const user1 = await User.findById({ _id: userId });
-    if (!user1) throw new Error("User not found");
-    if (user1.disabled) throw new Error("Account has disabled");
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
 
-  const { title, image,season, style } = data;
+  const { title, image, season, style } = data;
 
   // Find style IDs
   const styles = await Style.find({ name: { $in: style } }, "_id name"); // get both _id and name
@@ -50,18 +51,18 @@ export const createOutfit = async (userId, data) => {
 
 // Get all outfits of a user
 export const getUserOutfits = async (userId) => {
-    const user1 = await User.findById({ _id: userId });
-    if (!user1) throw new Error("User not found");
-    if (user1.disabled) throw new Error("Account has disabled");
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
   return await Outfit.find({ user: userId }).lean();
 };
 
 // Get single outfit details
 export const getOutfitById = async (outfitId, userId) => {
 
-    const user1 = await User.findById({ _id: userId });
-    if (!user1) throw new Error("User not found");
-    if (user1.disabled) throw new Error("Account has disabled");
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
 
   return await Outfit.findOne({ _id: outfitId, user: userId }).lean();
 };
@@ -69,13 +70,13 @@ export const getOutfitById = async (outfitId, userId) => {
 // Update Outfit
 export const updateOutfit = async (outfitId, userId, data) => {
 
-    const user1 = await User.findById({ _id: userId });
-    if (!user1) throw new Error("User not found");
-    if (user1.disabled) throw new Error("Account has disabled");
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
 
-  const { title, image,style} = data;
+  const { title, image, style } = data;
 
-  
+
   // Find style IDs
   const styles = await Style.find({ name: { $in: style } }, "_id name"); // get both _id and name
   const styleIds = styles.map(s => s._id);
@@ -87,7 +88,7 @@ export const updateOutfit = async (outfitId, userId, data) => {
       user: userId,
       title,
 
-      style:styleIds,
+      style: styleIds,
       image,
     });
     if (duplicate) throw new Error("Outfit with same title and image already exists");
@@ -98,12 +99,12 @@ export const updateOutfit = async (outfitId, userId, data) => {
     { $set: data },
     { new: true }
   )
-  // Populate style (only return name) and user (return all info)
-  .populate({
-    path: 'style',
-    select: 'name', // only style name
-  })
-  .populate('user'); // return full user document
+    // Populate style (only return name) and user (return all info)
+    .populate({
+      path: 'style',
+      select: 'name', // only style name
+    })
+    .populate('user'); // return full user document
 
   return updatedOutfit;
 };
@@ -111,9 +112,101 @@ export const updateOutfit = async (outfitId, userId, data) => {
 
 // Delete Outfit
 export const deleteOutfit = async (outfitId, userId) => {
-    const user1 = await User.findById({ _id: userId });
-    if (!user1) throw new Error("User not found");
-    if (user1.disabled) throw new Error("Account has disabled");
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
 
   return await Outfit.findOneAndDelete({ _id: outfitId, user: userId });
+};
+
+export const updateOutfitFavoriteStatus = async (outfitId, userId, favorite) => {
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
+
+  return await Outfit.findOneAndUpdate(
+    { _id: outfitId, user: userId },
+    { $set: { favorite } },
+    { new: true }
+  );
+};
+
+export const getOutfit = async (query, userId) => {
+  try {
+    const payload = {
+      query: query,
+      user: userId
+    };
+
+    // Call the external python API
+    const response = await axios.post(
+      `${process.env.PYTHON_API_URL}/get_outfit`,
+      payload,
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("python response getOutfit : =========================================================\n", response.data);
+
+    const responseData = response.data;
+
+    if (responseData?.status && responseData?.image_url) {
+      const outfitData = {
+        user: userId,
+        image: responseData.image_url,
+        generateType: "ai_generated",
+        outfitId: responseData?.outfit_id || null,
+        title: responseData?.title || null,
+        season: [responseData?.season] || null,
+      };
+
+      const addOutfit = await Outfit.insertOne(outfitData);
+      responseData.outfit_id = addOutfit._id;
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching outfit:", error.message);
+    throw new Error("Failed to fetch outfit: " + error.message);
+  }
+};
+
+export const getAiGeneratedOutfit = async (userId, page = 1, limit = 10, search) => {
+  const user1 = await User.findById({ _id: userId });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account has disabled");
+
+  const pageNumber = Number.isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
+  const limitNumber = Number.isNaN(Number(limit)) ? 10 : Math.max(1, Number(limit));
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const filter = { user: userId };
+  if (search) {
+    filter.title = { $regex: search, $options: "i" };
+  }
+
+  const [items, totalItems] = await Promise.all([
+    Outfit.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber)
+      .lean(),
+    Outfit.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(totalItems / limitNumber) || 1;
+
+  return {
+    items,
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      totalItems,
+      totalPages,
+    },
+  };
 };

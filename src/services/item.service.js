@@ -3,171 +3,210 @@ import Item from "../models/Item.js";
 import Materials from "../models/Materials.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
+import axios from "axios";
 
 export const createItem = async (data) => {
-try {
-  const user= await User.findById({_id:data.user})
-if(!user) throw new Error("User not found")
-if(user.disabled) throw new Error("Account  has disabled")
+  try {
+    const user = await User.findById({ _id: data.user });
+    if (!user) throw new Error("User not found");
+    if (user.disabled) throw new Error("Account has been disabled");
 
+    const normalizeString = (value) => {
+      if (value === null || value === undefined) return "";
+      const text = String(value).trim();
+      if (!text || text === "undefined" || text === "null") return "";
+      return text;
+    };
 
-  const { category, material, ...rest } = data;
-console.log(data,"from 7 line")
-    // Convert category names to ObjectIds
+    const toArray = (value) => {
+      if (Array.isArray(value)) return value;
+      if (value === null || value === undefined || value === "") return [];
+      return [value];
+    };
 
-    const categoryDocs = await Category.find({ name: { $in: category } });
-    const materialDocs = await Materials.find({ name: { $in: material } });
+    const itemPayload = {
+      image_url: normalizeString(data.image),
+      title: normalizeString(data.title),
+      brand: normalizeString(data.brand),
+      category: toArray(data.category),
+      material: toArray(data.material),
+      colors: toArray(data.colors),
+      season: toArray(data.season),
+      style: toArray(data.style),
+    };
 
-console.log(categoryDocs,"kk")
-    const item = new Item({
-      ...rest,
-      category: categoryDocs.map(c => c._id),
-      material: materialDocs.map(m => m._id)
-    });
+    if (!itemPayload.image_url) throw new Error("Image is required");
+    if (!itemPayload.title) throw new Error("Title is required");
+    if (!itemPayload.brand) throw new Error("Brand is required");
+    if (!itemPayload.category.length) throw new Error("Category is required");
+    if (!itemPayload.season.length) throw new Error("Season is required");
 
+    console.log("itemPayload : ", itemPayload);
 
-console.log(item)
+    const payload = {
+      user: data.user,
+      items: [itemPayload],
+    };
 
-  // const item = new Item({ ...data, user: userId });
-  return await item.save();
-} catch (error) {
-  throw new Error("Error creating item: " + error.message);
-  
-}
+    console.log("payload : ", payload);
+
+    const response = await axios.post(
+      `${process.env.PYTHON_API_URL}/upload_items`,
+      payload,
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // console.log("response : ", response);
+
+    return response.data;
+
+  } catch (error) {
+    const pythonMessage = error?.response?.data?.message || error?.response?.data?.error;
+    throw new Error("Error creating item: " + (pythonMessage || error.message));
+  }
 };
 
-export const getItems = async (filters,id) => {
 
-  const user= await User.findById({_id:id})
-if(!user) throw new Error("User not found")
-if(user.disabled) throw new Error("Account  has disabled")
+export const getItems = async (filters, id) => {
 
-  if(filters){
+  const user = await User.findById({ _id: id });
+  if (!user) throw new Error("User not found");
+  if (user.disabled) throw new Error("Account  has disabled");
+
+  if (filters) {
     const query = {};
-  query.user= id;
-  console.log(filters)
+    query.user = id;
+    console.log(filters);
 
-// Title search (case-insensitive)
-if (filters.title) query.title = { $regex: filters.title, $options: "i" };
+    // Title search (case-insensitive)
+    if (filters.title) query.title = { $regex: filters.title, $options: "i" };
 
-// Multiple brands (comma-separated)
-if (filters.brand)
-  query.brand = { $in: filters.brand.split(",").map((b) => b.trim()) };
+    // Multiple brands (comma-separated)
+    if (filters.brand)
+      query.brand = { $in: filters.brand.split(",").map((b) => b.trim()) };
 
-// Multiple categories (optional)
-if (filters.category) {
-  const categories = filters.category.split(",").map((c) => c.trim());
+    // Multiple categories (optional)
+    if (filters.category) {
+      const categories = filters.category.split(",").map((c) => c.trim());
 
-  const regexConditions = categories.map((c) => ({
-    name: { $regex: c, $options: "i" }, // partial + case-insensitive
-  }));
+      const regexConditions = categories.map((c) => ({
+        name: { $regex: c, $options: "i" }, // partial + case-insensitive
+      }));
 
-  const catDocs = await Category.find({
-    $or: regexConditions,
-  });
-  
-
-
-
-  // Extract IDs
-  const categoryIds = catDocs.map((c) => c._id.toString());
-  console.log("categoryIds:", categoryIds);
-
-  if (categoryIds.length > 0) {
-    query.category = { $in: categoryIds };
-  } else {
-    query.category = { $in: [] }; // no match
-  }
-}
-if (filters.material) {
-  const metarials = filters.material.split(",").map((c) => c.trim());
-
-  const regexConditions = metarials.map((c) => ({
-    name: { $regex: c, $options: "i" }, // partial + case-insensitive
-  }));
-
-  const catDocs = await Materials.find({
-    $or: regexConditions,
-  });
-  
-
-
-
-  // Extract IDs
-  const metarialIds = catDocs.map((c) => c._id.toString());
-  // console.log("categoryIds:", metarialIds);
-
-  if (metarialIds.length > 0) {
-    query.material = { $in: metarialIds };
-  } else {
-    query.material = { $in: [] }; // no match
-  }
-}
+      const catDocs = await Category.find({
+        $or: regexConditions,
+      });
 
 
 
 
-  
-// if (filters.material)
-//   query.material = { $in: filters.material.split(",").map((c) => c.trim()) };
+      // Extract IDs
+      const categoryIds = catDocs.map((c) => c._id.toString());
+      console.log("categoryIds:", categoryIds);
 
-// Colors, season, style
-if (filters.colors)
-  query.colors = { $in: filters.colors.split(",").map((c) => c.trim()) };
+      if (categoryIds.length > 0) {
+        query.category = { $in: categoryIds };
+      } else {
+        query.category = { $in: [] }; // no match
+      }
+    }
+    if (filters.material) {
+      const metarials = filters.material.split(",").map((c) => c.trim());
 
-if (filters.season)
-  query.season = { $in: filters.season.split(",").map((s) => s.trim()) };
+      const regexConditions = metarials.map((c) => ({
+        name: { $regex: c, $options: "i" }, // partial + case-insensitive
+      }));
 
-if (filters.style)
-  query.style = { $in: filters.style.split(",").map((s) => s.trim()) };
- 
+      const catDocs = await Materials.find({
+        $or: regexConditions,
+      });
+
+
+
+
+      // Extract IDs
+      const metarialIds = catDocs.map((c) => c._id.toString());
+      // console.log("categoryIds:", metarialIds);
+
+      if (metarialIds.length > 0) {
+        query.material = { $in: metarialIds };
+      } else {
+        query.material = { $in: [] }; // no match
+      }
+    }
+
+
+
+
+
+    // if (filters.material)
+    //   query.material = { $in: filters.material.split(",").map((c) => c.trim()) };
+
+    // Colors, season, style
+    if (filters.colors)
+      query.colors = { $in: filters.colors.split(",").map((c) => c.trim()) };
+
+    if (filters.season)
+      query.season = { $in: filters.season.split(",").map((s) => s.trim()) };
+
+    if (filters.style)
+      query.style = { $in: filters.style.split(",").map((s) => s.trim()) };
+
     const items = await Item.find(query)
-  .populate("category", "name -_id")  // only return category name
-  .populate("material", "name -_id")
-  .lean(); // only return material name
+      .populate("category", "name -_id")  // only return category name
+      .populate("material", "name -_id")
+      .select("-embedding")
+      .lean(); // only return material name
 
-const result = items.map(item => (
-{
-  ...item,
-  category: item.category?.[0]?.name || null,   // pick first category name
-  material: item.material?.[0]?.name || null,   // pick first material name
-}));
-console.log(result)
-return result;
-  
-    
+    const result = items.map(item => (
+      {
+        ...item,
+        category: item.category?.[0]?.name || null,   // pick first category name
+        material: item.material?.[0]?.name || null,   // pick first material name
+      }));
+    console.log(result);
+    return result;
+
+
   }
-  else{
-    const item = await Item.findById({user:id})
-    .populate("category", "name -_id")   
-    .populate("material", "name -_id")
-    .lean(); 
-    const result ={
-  ...item,
-  category: item.category?.[0]?.name || null,   // pick first category name
-  material: item.material?.[0]?.name || null,   // pick first material name
-}
-    return result
+  else {
+    console.log("id : ", id);
+    const item = await Item.findById({ user: id })
+      .populate("category", "name -_id")
+      .populate("material", "name -_id")
+      .select("-embedding")
+      .lean();
+    const result = {
+      ...item,
+      category: item.category?.[0]?.name || null,   // pick first category name
+      material: item.material?.[0]?.name || null,   // pick first material name
+    };
+    return result;
   }
 };
 
-export const getItemById = async (id,user) => {
-  const user1= await User.findById({_id:user})
-if(!user1) throw new Error("User not found")
-if(user1.disabled) throw new Error("Account  has disabled")
+export const getItemById = async (id, user) => {
+  const user1 = await User.findById({ _id: user });
+  if (!user1) throw new Error("User not found");
+  if (user1.disabled) throw new Error("Account  has disabled");
 
-    const item= await Item.findById(id)
-   
-    return item;
+  const item = await Item.findById(id).select("-embedding");
+
+  return item;
 };
 
 
 
 export const updateItem = async (id, data, user) => {
   try {
-    const user= await User.findById({_id:user})
-if(!user) throw new Error("User not found")
-if(user.disabled) throw new Error("Account  has disabled")
+    const user = await User.findById({ _id: user });
+    if (!user) throw new Error("User not found");
+    if (user.disabled) throw new Error("Account  has disabled");
 
     const query = {};
     console.log("Updating item with data:", data);
@@ -178,15 +217,15 @@ if(user.disabled) throw new Error("Account  has disabled")
 
       if (cat) {
         query.category = [cat._id]; // must be an array of ObjectIds
-      } 
-      
+      }
+
     }
     if (data.material) {
-      let cat = await Materials.findOne({  name: data.material, user });
+      let cat = await Materials.findOne({ name: data.material, user });
 
       if (cat) {
         query.material = [cat._id]; // must be an array of ObjectIds
-      } 
+      }
     }
 
     // Handle title update
@@ -207,16 +246,16 @@ if(user.disabled) throw new Error("Account  has disabled")
     if (data.image) query.image = data.image;
 
     console.log("Update query:", query);
-const ob = await Item.findById(id)
-console.log("dkls",ob,"kd")
+    const ob = await Item.findById(id);
+    console.log("dkls", ob, "kd");
     // Update item only if it belongs to the user
-   const item = await Item.findByIdAndUpdate(
+    const item = await Item.findByIdAndUpdate(
       { _id: id, user },
-  query,
-  { new: true, runValidators: true }
-);
+      query,
+      { new: true, runValidators: true }
+    );
 
-console.log(item)
+    console.log(item);
     if (!item) {
       throw new Error("Item not found or not authorized");
     }
@@ -230,15 +269,13 @@ console.log(item)
   }
 };
 
-  
+
 
 export const deleteItem = async (id) => {
-  
-     await Item.findByIdAndDelete({ _id: id });
-    return "user has been deleted successfully";
+
+  await Item.findByIdAndDelete({ _id: id });
+  return "user has been deleted successfully";
 };
-
-
 
 
 
@@ -251,6 +288,3 @@ export const getBrandsByUser = async (userId) => {
     throw new Error("Failed to fetch brands: " + error.message);
   }
 };
-
-
-

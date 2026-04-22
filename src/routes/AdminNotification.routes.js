@@ -5,9 +5,7 @@ import { getAdminNotificationscontroller, markAdminNotificationReadController } 
 
 const AdminNotificationRoute = express.Router();
 
-
-
-AdminNotificationRoute.get("/GetAllAdminNotification",authChecks, getAdminNotificationscontroller);
-AdminNotificationRoute.patch("/ReadAdminNotification/:id",authChecks, markAdminNotificationReadController);
+AdminNotificationRoute.get("/GetAllAdminNotification", authChecks, getAdminNotificationscontroller);
+AdminNotificationRoute.patch("/ReadAdminNotification/:id", authChecks, markAdminNotificationReadController);
 
 export default AdminNotificationRoute;

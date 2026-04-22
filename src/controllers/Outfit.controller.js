@@ -5,7 +5,11 @@ import {
   getOutfitById,
   updateOutfit,
   deleteOutfit,
+  getOutfit,
+  getAiGeneratedOutfit,
+  updateOutfitFavoriteStatus,
 } from "../services/Outfit.service.js";
+import { consumeCredit } from "../middlewares/credits.middleware.js";
 
 // ➕ Create Outfit
 //
@@ -16,25 +20,25 @@ export const createOutfitController = async (req, res) => {
     // const { title, season, style } = JSON.parse(req.body.data);
     // const data=JSON.parse(req.body.data)
     // const data=(req.body.data)
-   
-   const data = req.body;
-    const { title=null, season=null, style=null } = data;
-     if(title==="" || title===undefined||title===null|| title==="undefined" || title.trim(" ").length===0){
+
+    const data = req.body;
+    const { title = null, season = null, style = null } = data;
+    if (title === "" || title === undefined || title === null || title === "undefined" || title.trim(" ").length === 0) {
       return res.status(400).json({ message: "Title is required" });
     }
-    if(season==="" || season===undefined||season===null || season==="undefined"){
+    if (season === "" || season === undefined || season === null || season === "undefined") {
       return res.status(400).json({ message: "Season is required" });
     }
-    if(style==="" || style===undefined||style===null || style==="undefined"){
+    if (style === "" || style === undefined || style === null || style === "undefined") {
       return res.status(400).json({ message: "Style is required" });
     }
-     // const { title, season, style} = req.body;
-    
+    // const { title, season, style} = req.body;
+
     console.log("Parsed data:", title, season, style);
     let imageUrl = null;
-if (req.file) {
-  imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${req.file.key}`;
-}
+    if (req.file) {
+      imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${req.file.key}`;
+    }
     if (!imageUrl) return res.status(400).json({ error: "Image is required" });
 
 
@@ -96,17 +100,17 @@ export const updateOutfitController = async (req, res) => {
     let updateData = {};
     if (req.body) {
       //  const { title, season, style } = JSON.parse(req.body.data);
-      const { title = null, season = null, style = null} = req.body;
+      const { title = null, season = null, style = null } = req.body;
 
       // If new image is uploaded
-      updateData = { title, season, style  };
+      updateData = { title, season, style };
     }
     if (req.file) {
 
 
-    if (req.file) {
-  updateData.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${req.file.key}`;
-}
+      if (req.file) {
+        updateData.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${req.file.key}`;
+      }
     }
 
     const outfit = await updateOutfit(outfitId, userId, updateData);
@@ -157,3 +161,57 @@ export const deleteOutfitController = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const updateOutfitFavoriteStatusController = async (req, res) => {
+  try {
+    const userId = req.headers.user_id;
+    const outfitId = req.params.id;
+    const { favorite } = req.body;
+
+    if (typeof favorite !== "boolean") {
+      return res.status(400).json({ message: "favorite must be boolean" });
+    }
+
+    const outfit = await updateOutfitFavoriteStatus(outfitId, userId, favorite);
+    if (!outfit) return res.status(404).json({ message: "Outfit not found" });
+
+    res.json(outfit);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const getOutfitController = async (req, res, next) => {
+  try {
+    const { query } = req.body;
+    const userId = req.headers.user_id;
+
+    if (!query) {
+      return res.status(400).json({ message: "Query is required" });
+    }
+
+    const data = await getOutfit(query, userId);
+    if (data?.status) {
+      await consumeCredit(userId, "aiStylist");
+    }
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAiGeneratedOutfitController = async (req, res, next) => {
+  try {
+    const userId = req.headers.user_id;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = req.query.search || "";
+
+    const data = await getAiGeneratedOutfit(userId, page, limit, search);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+

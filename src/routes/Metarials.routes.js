@@ -12,6 +12,6 @@ MetarialRoute.get("/getAllMetarial", getAllMetarialController);
 // Admin only: Manage styles
 MetarialRoute.post("/createMetarial", authChecks, creatMetarialsController);
 MetarialRoute.put("/UpdateMetarial/:id", authChecks, updateMetarialsController);
-MetarialRoute.delete("/DeleteMetarial/:id",authChecks, deletMetarialsController);
+MetarialRoute.delete("/DeleteMetarial/:id", authChecks, deletMetarialsController);
 
 export default MetarialRoute;
