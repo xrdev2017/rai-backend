@@ -13,7 +13,8 @@ async function upsertSubscription(filter, data) {
     return await Subscription.findOneAndUpdate(
       filter,
       { $set: data },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { new: true }
+      // { upsert: true, new: true, setDefaultsOnInsert: true }
     );
   } catch (err) {
     // Non-fatal – log but don't block the response
@@ -311,10 +312,7 @@ export async function googleWebhook(req, res) {
       ]
     });
 
-
-    /*
-    Unknown token case
-    */
+    // Unknown token case
     if (!existingSub && !googleData) {
       console.log("Unknown token webhook ignored");
 
@@ -339,10 +337,6 @@ export async function googleWebhook(req, res) {
       });
     }
 
-
-    /*
-    Determine final status
-    */
     let finalStatus = "unknown";
 
     if (googleData) {
