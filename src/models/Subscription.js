@@ -1,11 +1,14 @@
 import { Schema, model } from "mongoose";
+import { required } from "zod/mini";
 
 const SubscriptionSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      index: true
+      index: true,
+      required: true,
+      unique: true
     },
 
     platform: {

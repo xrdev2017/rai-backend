@@ -191,7 +191,6 @@ export async function verifyIos(req, res) {
 
     // Map Apple transaction fields → Subscription schema
     const subscriptionData = {
-      userId: resolvedUserId,
       platform: "ios",
       transactionId: result.transactionId,
       originalTransactionId,
@@ -300,7 +299,6 @@ export async function verifyAndroid(req, res) {
     const resolvedUserId = userId || existingSub?.userId || undefined;
 
     const subscriptionData = {
-      userId: resolvedUserId,
       platform: "android",
       purchaseToken: resolvedPurchaseToken,
       linkedPurchaseToken: result.linkedPurchaseToken || existingSub?.linkedPurchaseToken || null,
@@ -490,7 +488,6 @@ export async function appleWebhook(req, res) {
     const updatedSub = await upsertSubscription(
       filter,
       {
-        userId,
         platform: "ios",
         transactionId,
         originalTransactionId,
@@ -683,11 +680,10 @@ export async function googleWebhook(req, res) {
     const updatedSub = await upsertSubscription(
       {
         purchaseToken: resolvedPurchaseToken,
-        platform: "android"
+        platform: "android",
+        userId: existingSub?.userId
       },
       {
-        userId: existingSub?.userId,
-
         platform: "android",
 
         purchaseToken: resolvedPurchaseToken,
@@ -818,11 +814,11 @@ export async function restoreIos(req, res) {
     let record = await Subscription.findOne({ transactionId, platform: "ios" });
 
     if (record && !isStale(record.lastVerifiedAt)) {
-      // Cache hit — re-link to the current user if needed
-      if (userId && String(record.userId) !== String(userId)) {
-        record.userId = userId;
-        await record.save();
-      }
+      // // Cache hit — re-link to the current user if needed
+      // if (userId && String(record.userId) !== String(userId)) {
+      //   record.userId = userId;
+      //   await record.save();
+      // }
 
       await appendSubscriptionHistory({
         userId: record.userId,
@@ -886,12 +882,12 @@ export async function restoreIos(req, res) {
       : {
         platform: "ios",
         originalTransactionId,
+        userId: resolvedUserId
       };
 
     const updatedSub = await upsertSubscription(
       updateFilter,
       {
-        userId: resolvedUserId,
         platform: "ios",
         transactionId: result.transactionId,
         originalTransactionId,
@@ -1026,9 +1022,8 @@ export async function restoreAndroid(req, res) {
     const result = await verifyAndroidSubscription(packageName, productId, purchaseToken);
 
     const updatedSub = await upsertSubscription(
-      { purchaseToken, platform: "android" },
+      { purchaseToken, platform: "android", userId: userId },
       {
-        userId: userId || undefined,
         platform: "android",
         purchaseToken,
         linkedPurchaseToken: result.linkedPurchaseToken || null,
