@@ -43,19 +43,6 @@ const TIER_CREDITS = {
 /** Free-tier defaults applied when a subscription is not active. */
 const FREE_TIER_CREDITS = { aiStylist: 3, vto: 3 };
 
-/**
- * Applies the correct generation credit limits to a user based on their
- * verified subscription tier (Android only).
- *
- * Rules:
- *  - Anonymous calls (no userId) are skipped.
- *  - Active subscription  → set limits per TIER_CREDITS, reset used counts.
- *  - Non-active (expired/cancelled/unknown) → revert to free-tier limits.
- *
- * @param {string|null} userId
- * @param {string}      productId  - Google Play product ID
- * @param {string}      status     - "active" | "expired" | "cancelled" | "unknown"
- */
 async function applyCreditsForTier(userId, productId, status) {
   if (!userId) return;
 
@@ -65,14 +52,12 @@ async function applyCreditsForTier(userId, productId, status) {
     if (status === "active") {
       const tier = TIER_CREDITS[productId];
       if (!tier) {
-        // Unknown product – don't alter credits
         console.warn(`[IAP] Unknown productId "${productId}", skipping credit update.`);
         return;
       }
       aiStylistLimit = tier.aiStylist;
       vtoLimit = tier.vto;
     } else {
-      // Subscription lapsed – revert to free tier
       aiStylistLimit = FREE_TIER_CREDITS.aiStylist;
       vtoLimit = FREE_TIER_CREDITS.vto;
     }
@@ -104,19 +89,6 @@ const IOS_TIER_CREDITS = {
   rai_pro_yearly: { aiStylist: 60, vto: 30 },
 };
 
-/**
- * Applies the correct generation credit limits to a user based on their
- * verified iOS subscription tier.
- *
- * Rules:
- *  - Anonymous calls (no userId) are skipped.
- *  - Active subscription  → set limits per IOS_TIER_CREDITS, reset used counts.
- *  - Non-active (expired/cancelled/unknown) → revert to free-tier limits.
- *
- * @param {string|null} userId
- * @param {string}      productId  - App Store product ID
- * @param {string}      status     - "active" | "expired" | "cancelled" | "unknown"
- */
 async function applyCreditsForTierIos(userId, productId, status) {
   if (!userId) return;
 
@@ -158,114 +130,16 @@ async function applyCreditsForTierIos(userId, productId, status) {
   }
 }
 
-export async function verifyIos(req, res) {
-  const { transactionId } = req.body;
+const STALE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
 
-  try {
-    // result = decoded Apple transaction object (jwt.decode of signedTransactionInfo)
-    const result = await verifyIosSubscription(transactionId);
-
-    const requestedUserId = req.headers.user_id || null;
-
-    const originalTransactionId = result.originalTransactionId || result.transactionId;
-
-    const existingSub = await Subscription.findOne({
-      platform: "ios",
-      userId: requestedUserId,
-    });
-
-    const resolvedUserId = requestedUserId || existingSub?.userId || undefined;
-
-    // Derive status: active if expiresDate is in the future, else expired
-    const now = Date.now();
-    const expiresDate = result.expiresDate ?? null; // milliseconds epoch from Apple
-    const status = expiresDate !== null && expiresDate > now ? "active" : "expired";
-
-    // Map Apple transaction fields → Subscription schema
-    const subscriptionData = {
-      platform: "ios",
-      transactionId: result.transactionId,
-      originalTransactionId,
-      productId: result.productId,
-      orderId: originalTransactionId,   // closest iOS equivalent to an orderId
-      packageName: result.bundleId,
-      status,
-      startDate: result.purchaseDate ? new Date(result.purchaseDate) : undefined,
-      expiryDate: result.expiresDate ? new Date(result.expiresDate) : undefined,
-      autoRenewing: result.type === "Auto-Renewable Subscription",
-      lastVerifiedAt: new Date(),
-      rawResponse: result,
-    };
-
-    let updatedSub;
-
-    if (existingSub) {
-      updatedSub = await Subscription.findByIdAndUpdate(
-        existingSub._id,
-        { $set: subscriptionData },
-        { new: true }
-      );
-    } else {
-      updatedSub = await Subscription.create(subscriptionData);
-    }
-
-    await appendSubscriptionHistory({
-      userId: updatedSub?.userId || resolvedUserId,
-      subscriptionId: updatedSub?._id,
-      platform: "ios",
-      eventType: "verify_ios",
-      eventSource: "verify",
-      statusReason: "verify_endpoint",
-      status,
-      productId: result.productId,
-      packageName: result.bundleId,
-      environment: result.environment,
-      autoRenewing: result.type === "Auto-Renewable Subscription",
-      orderId: originalTransactionId,
-      transactionId: result.transactionId,
-      originalTransactionId,
-      startDate: result.purchaseDate ? new Date(result.purchaseDate) : undefined,
-      expiryDate: result.expiresDate ? new Date(result.expiresDate) : undefined,
-      occurredAt: new Date(),
-      providerReferenceId: originalTransactionId,
-      rawRequest: {
-        transactionId,
-        userId: requestedUserId,
-      },
-      rawResponse: result,
-    });
-
-    await applyCreditsForTierIos(
-      updatedSub?.userId || resolvedUserId,
-      result.productId,
-      status
-    );
-
-    return res.status(200).json({
-      success: true,
-      platform: "ios",
-      data: {
-        userId: resolvedUserId || null,
-        transactionId: result.transactionId,
-        productId: result.productId,
-        status,
-        expiryDate: result.expiresDate ? new Date(result.expiresDate).toISOString() : null,
-        startDate: result.purchaseDate ? new Date(result.purchaseDate).toISOString() : null,
-        autoRenewing: result.type === "Auto-Renewable Subscription",
-        environment: result.environment,
-        raw: result,
-      },
-    });
-  } catch (err) {
-    console.error("[IAP iOS] Verification error:", err.message);
-    const statusCode = err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
-    return res.status(statusCode).json({
-      success: false,
-      message: err.message,
-      ...(err.appleError && { appleError: err.appleError }),
-    });
-  }
+function isStale(lastVerifiedAt) {
+  if (!lastVerifiedAt) return true;
+  return Date.now() - new Date(lastVerifiedAt).getTime() > STALE_THRESHOLD_MS;
 }
+
+//----------------------------------------------------------
+//Android IAP
+//----------------------------------------------------------
 
 export async function verifyAndroid(req, res) {
   try {
@@ -285,12 +159,9 @@ export async function verifyAndroid(req, res) {
       userId: userId,
     });
 
-    const resolvedPurchaseToken = existingSub?.purchaseToken || purchaseToken;
-    const resolvedUserId = userId || existingSub?.userId || undefined;
-
     const subscriptionData = {
       platform: "android",
-      purchaseToken: resolvedPurchaseToken,
+      purchaseToken: purchaseToken,
       linkedPurchaseToken: result.linkedPurchaseToken || existingSub?.linkedPurchaseToken || null,
       orderId: result.latestOrderId,
       productId: result.productId,
@@ -316,6 +187,7 @@ export async function verifyAndroid(req, res) {
         { new: true }
       );
     } else {
+      subscriptionData.userId = userId;
       updatedSub = await Subscription.create(subscriptionData);
     }
 
@@ -360,8 +232,7 @@ export async function verifyAndroid(req, res) {
     });
 
   } catch (err) {
-    console.error(err);
-
+    console.error("verifyAndroid error: >>>>>", err);
     return res.status(500).json({
       success: false,
       message: err.message
@@ -369,179 +240,10 @@ export async function verifyAndroid(req, res) {
   }
 }
 
-export async function appleWebhook(req, res) {
-  try {
-    const { signedPayload } = req.body;
-
-    if (!signedPayload || typeof signedPayload !== "string") {
-      return res.status(400).json({ success: false, message: "Missing or invalid signedPayload" });
-    }
-
-    let notificationPayload;
-    try {
-      notificationPayload = jwt.decode(signedPayload, { complete: true });
-    } catch {
-      return res.status(400).json({ success: false, message: "Failed to decode signedPayload JWT" });
-    }
-
-    if (!notificationPayload?.payload) {
-      return res.status(400).json({ success: false, message: "Invalid signedPayload" });
-    }
-
-    const { notificationType, subtype, data } = notificationPayload.payload;
-
-    const transactionInfo = data?.signedTransactionInfo
-      ? jwt.decode(data.signedTransactionInfo)
-      : null;
-
-    const renewalInfo = data?.signedRenewalInfo
-      ? jwt.decode(data.signedRenewalInfo)
-      : null;
-
-    const originalTransactionId =
-      transactionInfo?.originalTransactionId ||
-      renewalInfo?.originalTransactionId ||
-      transactionInfo?.transactionId ||
-      null;
-
-    if (!originalTransactionId) {
-      await appendSubscriptionHistory({
-        platform: "ios",
-        eventType: "apple_webhook",
-        eventSource: "webhook",
-        notificationType,
-        notificationSubtype: subtype,
-        statusReason: "missing_original_transaction_id",
-        status: "unknown",
-        occurredAt: new Date(),
-        rawRequest: req.body,
-        rawResponse: notificationPayload.payload,
-      });
-
-      return res.status(200).json({ success: true, message: "Apple webhook received (no transaction chain)" });
-    }
-
-    const isActive =
-      notificationType === "SUBSCRIBED" ||
-      notificationType === "DID_RENEW" ||
-      notificationType === "DID_CHANGE_RENEWAL_STATUS";
-
-    const status = isActive ? "active" : "expired";
-
-    const existingSub = await Subscription.findOne({
-      platform: "ios",
-      $or: [
-        { originalTransactionId },
-        { transactionId: originalTransactionId },
-      ],
-    });
-
-    const userId = existingSub?.userId || undefined;
-
-    const transactionId = transactionInfo?.transactionId || existingSub?.transactionId || originalTransactionId;
-    const productId =
-      transactionInfo?.productId ||
-      renewalInfo?.productId ||
-      renewalInfo?.autoRenewProductId ||
-      existingSub?.productId;
-
-    const packageName = transactionInfo?.bundleId || existingSub?.packageName;
-
-    const startDate = transactionInfo?.purchaseDate
-      ? new Date(transactionInfo.purchaseDate)
-      : existingSub?.startDate;
-
-    const expiryDate = transactionInfo?.expiresDate
-      ? new Date(transactionInfo.expiresDate)
-      : renewalInfo?.renewalDate
-        ? new Date(renewalInfo.renewalDate)
-        : existingSub?.expiryDate;
-
-    const autoRenewing = renewalInfo?.autoRenewStatus !== undefined
-      ? renewalInfo.autoRenewStatus === 1
-      : transactionInfo?.type === "Auto-Renewable Subscription"
-        ? true
-        : existingSub?.autoRenewing;
-
-    const filter = existingSub
-      ? { _id: existingSub._id }
-      : {
-        platform: "ios",
-        originalTransactionId,
-      };
-
-    const updatedSub = await upsertSubscription(
-      filter,
-      {
-        platform: "ios",
-        transactionId,
-        originalTransactionId,
-        productId,
-        orderId: originalTransactionId,
-        packageName,
-        status,
-        startDate,
-        expiryDate,
-        autoRenewing,
-        lastWebhookEvent: notificationType + (subtype ? `_${subtype}` : ""),
-        lastVerifiedAt: new Date(),
-        rawResponse: {
-          notification: notificationPayload.payload,
-          transactionInfo,
-          renewalInfo,
-        },
-      }
-    );
-
-    await appendSubscriptionHistory({
-      userId: updatedSub?.userId || userId,
-      subscriptionId: updatedSub?._id,
-      platform: "ios",
-      eventType: "apple_webhook",
-      eventSource: "webhook",
-      notificationType,
-      notificationSubtype: subtype,
-      statusReason: "apple_notification",
-      status,
-      productId,
-      packageName,
-      environment: transactionInfo?.environment || renewalInfo?.environment,
-      autoRenewing,
-      orderId: originalTransactionId,
-      transactionId,
-      originalTransactionId,
-      startDate,
-      expiryDate,
-      occurredAt: new Date(),
-      providerReferenceId: originalTransactionId,
-      rawRequest: req.body,
-      rawResponse: {
-        notification: notificationPayload.payload,
-        transactionInfo,
-        renewalInfo,
-      },
-    });
-
-    await applyCreditsForTierIos(
-      updatedSub?.userId || userId,
-      productId,
-      status
-    );
-
-    return res.status(200).json({ success: true, message: "Apple webhook received" });
-  } catch (err) {
-    console.error("[IAP Apple Webhook] Error:", err.message);
-    return res.status(200).json({ success: true, message: "Acknowledged" });
-  }
-}
-
 export async function googleWebhook(req, res) {
   try {
 
-
     const messageData = req.body?.message?.data;
-
-    // console.log("messageData", messageData);
 
     if (!messageData) {
       return res.status(200).json({ success: true });
@@ -563,6 +265,8 @@ export async function googleWebhook(req, res) {
       });
     }
 
+    console.log("notification: >>>>>", notification);
+
     const subNotification = notification.subscriptionNotification;
 
     if (!subNotification) {
@@ -575,10 +279,8 @@ export async function googleWebhook(req, res) {
       notificationType
     } = subNotification;
 
+    console.log("subNotification: >>>>>", subNotification);
 
-    /*
-    ALWAYS VERIFY FROM GOOGLE AGAIN
-    */
     let googleData;
 
     try {
@@ -763,15 +465,408 @@ export async function googleWebhook(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Restore Purchase — shared constants
-// ─────────────────────────────────────────────────────────────────────────────
+export async function restoreAndroid(req, res) {
+  const { purchaseToken, productId, packageName } = req.body;
+  const userId = req.headers.user_id || null;
 
-const STALE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
+  try {
+    // ── 1. Check DB ───────────────────────────────────────────────────────────
+    let record = await Subscription.findOne({ purchaseToken, platform: "android" });
 
-function isStale(lastVerifiedAt) {
-  if (!lastVerifiedAt) return true;
-  return Date.now() - new Date(lastVerifiedAt).getTime() > STALE_THRESHOLD_MS;
+    if (record && !isStale(record.lastVerifiedAt)) {
+      // Cache hit — re-link to the current user if needed
+      if (userId && String(record.userId) !== String(userId)) {
+        record.userId = userId;
+        await record.save();
+      }
+
+      await appendSubscriptionHistory({
+        userId: record.userId,
+        subscriptionId: record._id,
+        platform: "android",
+        eventType: "restore_android",
+        eventSource: "restore",
+        statusReason: "restore_cache_hit",
+        status: record.status,
+        productId: record.productId,
+        basePlanId: record.basePlanId,
+        packageName: record.packageName,
+        autoRenewing: record.autoRenewing,
+        orderId: record.orderId,
+        purchaseToken: record.purchaseToken,
+        linkedPurchaseToken: record.linkedPurchaseToken,
+        startDate: record.startDate,
+        expiryDate: record.expiryDate,
+        expiryTimeMillis: record.expiryTimeMillis,
+        occurredAt: new Date(),
+        providerReferenceId: record.linkedPurchaseToken || record.purchaseToken,
+        rawRequest: req.body,
+        rawResponse: {
+          source: "cache",
+          subscriptionId: record._id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        platform: "android",
+        restored: true,
+        source: "cache",
+        data: {
+          status: record.status,
+          expiryTimeMillis: record.expiryTimeMillis,
+          autoRenewing: record.autoRenewing,
+        },
+      });
+    }
+
+    // ── 2. Re-verify with Google Play ─────────────────────────────────────────
+    const result = await verifyAndroidSubscription(packageName, productId, purchaseToken);
+
+    const updatedSub = await upsertSubscription(
+      { purchaseToken, platform: "android", userId: userId },
+      {
+        platform: "android",
+        purchaseToken,
+        linkedPurchaseToken: result.linkedPurchaseToken || null,
+        orderId: result.latestOrderId,
+        productId: result.productId,
+        basePlanId: result.basePlanId,
+        packageName,
+        status: result.status,
+        startDate: result.startDate,
+        expiryDate: result.expiryDate,
+        expiryTimeMillis: result.expiryTimeMillis,
+        autoRenewing: result.autoRenewing,
+        rawResponse: result.raw,
+        lastVerifiedAt: new Date(),
+      }
+    );
+
+    await appendSubscriptionHistory({
+      userId: updatedSub?.userId || userId || undefined,
+      subscriptionId: updatedSub?._id,
+      platform: "android",
+      eventType: "restore_android",
+      eventSource: "restore",
+      statusReason: "restore_reverify",
+      status: result.status,
+      productId: result.productId,
+      basePlanId: result.basePlanId,
+      packageName,
+      autoRenewing: result.autoRenewing,
+      orderId: result.latestOrderId,
+      purchaseToken,
+      linkedPurchaseToken: result.linkedPurchaseToken || null,
+      startDate: result.startDate,
+      expiryDate: result.expiryDate,
+      expiryTimeMillis: result.expiryTimeMillis,
+      occurredAt: new Date(),
+      providerReferenceId: result.linkedPurchaseToken || purchaseToken,
+      rawRequest: req.body,
+      rawResponse: result.raw,
+    });
+
+    return res.status(200).json({
+      success: true,
+      platform: "android",
+      restored: true,
+      source: "google",
+      data: {
+        status: result.status,
+        expiryTimeMillis: result.expiryTimeMillis,
+        autoRenewing: result.autoRenewing,
+      },
+    });
+  } catch (err) {
+    console.error("[IAP Android Restore] Error:", err.message);
+    const statusCode = err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message,
+      ...(err.googleError && { googleError: err.googleError }),
+    });
+  }
+}
+
+
+//----------------------------------------------------------
+//iOS IAP
+//----------------------------------------------------------
+
+export async function verifyIos(req, res) {
+  const { transactionId } = req.body;
+
+  try {
+    // result = decoded Apple transaction object (jwt.decode of signedTransactionInfo)
+    const result = await verifyIosSubscription(transactionId);
+
+    const requestedUserId = req.headers.user_id || null;
+
+    const originalTransactionId = result.originalTransactionId || result.transactionId;
+
+    const existingSub = await Subscription.findOne({
+      platform: "ios",
+      userId: requestedUserId,
+    });
+
+    const resolvedUserId = requestedUserId || existingSub?.userId || undefined;
+
+    // Derive status: active if expiresDate is in the future, else expired
+    const now = Date.now();
+    const expiresDate = result.expiresDate ?? null; // milliseconds epoch from Apple
+    const status = expiresDate !== null && expiresDate > now ? "active" : "expired";
+
+    // Map Apple transaction fields → Subscription schema
+    const subscriptionData = {
+      platform: "ios",
+      transactionId: result.transactionId,
+      originalTransactionId,
+      productId: result.productId,
+      orderId: originalTransactionId,   // closest iOS equivalent to an orderId
+      packageName: result.bundleId,
+      status,
+      startDate: result.purchaseDate ? new Date(result.purchaseDate) : undefined,
+      expiryDate: result.expiresDate ? new Date(result.expiresDate) : undefined,
+      autoRenewing: result.type === "Auto-Renewable Subscription",
+      lastVerifiedAt: new Date(),
+      rawResponse: result,
+    };
+
+    let updatedSub;
+
+    if (existingSub) {
+      updatedSub = await Subscription.findByIdAndUpdate(
+        existingSub._id,
+        { $set: subscriptionData },
+        { new: true }
+      );
+    } else {
+      updatedSub = await Subscription.create(subscriptionData);
+    }
+
+    await appendSubscriptionHistory({
+      userId: updatedSub?.userId || resolvedUserId,
+      subscriptionId: updatedSub?._id,
+      platform: "ios",
+      eventType: "verify_ios",
+      eventSource: "verify",
+      statusReason: "verify_endpoint",
+      status,
+      productId: result.productId,
+      packageName: result.bundleId,
+      environment: result.environment,
+      autoRenewing: result.type === "Auto-Renewable Subscription",
+      orderId: originalTransactionId,
+      transactionId: result.transactionId,
+      originalTransactionId,
+      startDate: result.purchaseDate ? new Date(result.purchaseDate) : undefined,
+      expiryDate: result.expiresDate ? new Date(result.expiresDate) : undefined,
+      occurredAt: new Date(),
+      providerReferenceId: originalTransactionId,
+      rawRequest: {
+        transactionId,
+        userId: requestedUserId,
+      },
+      rawResponse: result,
+    });
+
+    await applyCreditsForTierIos(
+      updatedSub?.userId || resolvedUserId,
+      result.productId,
+      status
+    );
+
+    return res.status(200).json({
+      success: true,
+      platform: "ios",
+      data: {
+        userId: resolvedUserId || null,
+        transactionId: result.transactionId,
+        productId: result.productId,
+        status,
+        expiryDate: result.expiresDate ? new Date(result.expiresDate).toISOString() : null,
+        startDate: result.purchaseDate ? new Date(result.purchaseDate).toISOString() : null,
+        autoRenewing: result.type === "Auto-Renewable Subscription",
+        environment: result.environment,
+        raw: result,
+      },
+    });
+  } catch (err) {
+    console.error("[IAP iOS] Verification error:", err.message);
+    const statusCode = err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message,
+      ...(err.appleError && { appleError: err.appleError }),
+    });
+  }
+}
+
+export async function appleWebhook(req, res) {
+  try {
+    const { signedPayload } = req.body;
+
+    if (!signedPayload || typeof signedPayload !== "string") {
+      return res.status(400).json({ success: false, message: "Missing or invalid signedPayload" });
+    }
+
+    let notificationPayload;
+    try {
+      notificationPayload = jwt.decode(signedPayload, { complete: true });
+    } catch {
+      return res.status(400).json({ success: false, message: "Failed to decode signedPayload JWT" });
+    }
+
+    if (!notificationPayload?.payload) {
+      return res.status(400).json({ success: false, message: "Invalid signedPayload" });
+    }
+
+    const { notificationType, subtype, data } = notificationPayload.payload;
+
+    const transactionInfo = data?.signedTransactionInfo
+      ? jwt.decode(data.signedTransactionInfo)
+      : null;
+
+    const renewalInfo = data?.signedRenewalInfo
+      ? jwt.decode(data.signedRenewalInfo)
+      : null;
+
+    const originalTransactionId =
+      transactionInfo?.originalTransactionId ||
+      renewalInfo?.originalTransactionId ||
+      transactionInfo?.transactionId ||
+      null;
+
+    if (!originalTransactionId) {
+      await appendSubscriptionHistory({
+        platform: "ios",
+        eventType: "apple_webhook",
+        eventSource: "webhook",
+        notificationType,
+        notificationSubtype: subtype,
+        statusReason: "missing_original_transaction_id",
+        status: "unknown",
+        occurredAt: new Date(),
+        rawRequest: req.body,
+        rawResponse: notificationPayload.payload,
+      });
+
+      return res.status(200).json({ success: true, message: "Apple webhook received (no transaction chain)" });
+    }
+
+    const isActive =
+      notificationType === "SUBSCRIBED" ||
+      notificationType === "DID_RENEW" ||
+      notificationType === "DID_CHANGE_RENEWAL_STATUS";
+
+    const status = isActive ? "active" : "expired";
+
+    const existingSub = await Subscription.findOne({
+      platform: "ios",
+      $or: [
+        { originalTransactionId },
+        { transactionId: originalTransactionId },
+      ],
+    });
+
+    const userId = existingSub?.userId || undefined;
+
+    const transactionId = transactionInfo?.transactionId || existingSub?.transactionId || originalTransactionId;
+    const productId =
+      transactionInfo?.productId ||
+      renewalInfo?.productId ||
+      renewalInfo?.autoRenewProductId ||
+      existingSub?.productId;
+
+    const packageName = transactionInfo?.bundleId || existingSub?.packageName;
+
+    const startDate = transactionInfo?.purchaseDate
+      ? new Date(transactionInfo.purchaseDate)
+      : existingSub?.startDate;
+
+    const expiryDate = transactionInfo?.expiresDate
+      ? new Date(transactionInfo.expiresDate)
+      : renewalInfo?.renewalDate
+        ? new Date(renewalInfo.renewalDate)
+        : existingSub?.expiryDate;
+
+    const autoRenewing = renewalInfo?.autoRenewStatus !== undefined
+      ? renewalInfo.autoRenewStatus === 1
+      : transactionInfo?.type === "Auto-Renewable Subscription"
+        ? true
+        : existingSub?.autoRenewing;
+
+    const filter = existingSub
+      ? { _id: existingSub._id }
+      : {
+        platform: "ios",
+        originalTransactionId,
+      };
+
+    const updatedSub = await upsertSubscription(
+      filter,
+      {
+        platform: "ios",
+        transactionId,
+        originalTransactionId,
+        productId,
+        orderId: originalTransactionId,
+        packageName,
+        status,
+        startDate,
+        expiryDate,
+        autoRenewing,
+        lastWebhookEvent: notificationType + (subtype ? `_${subtype}` : ""),
+        lastVerifiedAt: new Date(),
+        rawResponse: {
+          notification: notificationPayload.payload,
+          transactionInfo,
+          renewalInfo,
+        },
+      }
+    );
+
+    await appendSubscriptionHistory({
+      userId: updatedSub?.userId || userId,
+      subscriptionId: updatedSub?._id,
+      platform: "ios",
+      eventType: "apple_webhook",
+      eventSource: "webhook",
+      notificationType,
+      notificationSubtype: subtype,
+      statusReason: "apple_notification",
+      status,
+      productId,
+      packageName,
+      environment: transactionInfo?.environment || renewalInfo?.environment,
+      autoRenewing,
+      orderId: originalTransactionId,
+      transactionId,
+      originalTransactionId,
+      startDate,
+      expiryDate,
+      occurredAt: new Date(),
+      providerReferenceId: originalTransactionId,
+      rawRequest: req.body,
+      rawResponse: {
+        notification: notificationPayload.payload,
+        transactionInfo,
+        renewalInfo,
+      },
+    });
+
+    await applyCreditsForTierIos(
+      updatedSub?.userId || userId,
+      productId,
+      status
+    );
+
+    return res.status(200).json({ success: true, message: "Apple webhook received" });
+  } catch (err) {
+    console.error("[IAP Apple Webhook] Error:", err.message);
+    return res.status(200).json({ success: true, message: "Acknowledged" });
+  }
 }
 
 export async function restoreIos(req, res) {
@@ -918,130 +1013,6 @@ export async function restoreIos(req, res) {
       success: false,
       message: err.message,
       ...(err.appleError && { appleError: err.appleError }),
-    });
-  }
-}
-
-export async function restoreAndroid(req, res) {
-  const { purchaseToken, productId, packageName } = req.body;
-  const userId = req.headers.user_id || null;
-
-  try {
-    // ── 1. Check DB ───────────────────────────────────────────────────────────
-    let record = await Subscription.findOne({ purchaseToken, platform: "android" });
-
-    if (record && !isStale(record.lastVerifiedAt)) {
-      // Cache hit — re-link to the current user if needed
-      if (userId && String(record.userId) !== String(userId)) {
-        record.userId = userId;
-        await record.save();
-      }
-
-      await appendSubscriptionHistory({
-        userId: record.userId,
-        subscriptionId: record._id,
-        platform: "android",
-        eventType: "restore_android",
-        eventSource: "restore",
-        statusReason: "restore_cache_hit",
-        status: record.status,
-        productId: record.productId,
-        basePlanId: record.basePlanId,
-        packageName: record.packageName,
-        autoRenewing: record.autoRenewing,
-        orderId: record.orderId,
-        purchaseToken: record.purchaseToken,
-        linkedPurchaseToken: record.linkedPurchaseToken,
-        startDate: record.startDate,
-        expiryDate: record.expiryDate,
-        expiryTimeMillis: record.expiryTimeMillis,
-        occurredAt: new Date(),
-        providerReferenceId: record.linkedPurchaseToken || record.purchaseToken,
-        rawRequest: req.body,
-        rawResponse: {
-          source: "cache",
-          subscriptionId: record._id,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        platform: "android",
-        restored: true,
-        source: "cache",
-        data: {
-          status: record.status,
-          expiryTimeMillis: record.expiryTimeMillis,
-          autoRenewing: record.autoRenewing,
-        },
-      });
-    }
-
-    // ── 2. Re-verify with Google Play ─────────────────────────────────────────
-    const result = await verifyAndroidSubscription(packageName, productId, purchaseToken);
-
-    const updatedSub = await upsertSubscription(
-      { purchaseToken, platform: "android", userId: userId },
-      {
-        platform: "android",
-        purchaseToken,
-        linkedPurchaseToken: result.linkedPurchaseToken || null,
-        orderId: result.latestOrderId,
-        productId: result.productId,
-        basePlanId: result.basePlanId,
-        packageName,
-        status: result.status,
-        startDate: result.startDate,
-        expiryDate: result.expiryDate,
-        expiryTimeMillis: result.expiryTimeMillis,
-        autoRenewing: result.autoRenewing,
-        rawResponse: result.raw,
-        lastVerifiedAt: new Date(),
-      }
-    );
-
-    await appendSubscriptionHistory({
-      userId: updatedSub?.userId || userId || undefined,
-      subscriptionId: updatedSub?._id,
-      platform: "android",
-      eventType: "restore_android",
-      eventSource: "restore",
-      statusReason: "restore_reverify",
-      status: result.status,
-      productId: result.productId,
-      basePlanId: result.basePlanId,
-      packageName,
-      autoRenewing: result.autoRenewing,
-      orderId: result.latestOrderId,
-      purchaseToken,
-      linkedPurchaseToken: result.linkedPurchaseToken || null,
-      startDate: result.startDate,
-      expiryDate: result.expiryDate,
-      expiryTimeMillis: result.expiryTimeMillis,
-      occurredAt: new Date(),
-      providerReferenceId: result.linkedPurchaseToken || purchaseToken,
-      rawRequest: req.body,
-      rawResponse: result.raw,
-    });
-
-    return res.status(200).json({
-      success: true,
-      platform: "android",
-      restored: true,
-      source: "google",
-      data: {
-        status: result.status,
-        expiryTimeMillis: result.expiryTimeMillis,
-        autoRenewing: result.autoRenewing,
-      },
-    });
-  } catch (err) {
-    console.error("[IAP Android Restore] Error:", err.message);
-    const statusCode = err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
-    return res.status(statusCode).json({
-      success: false,
-      message: err.message,
-      ...(err.googleError && { googleError: err.googleError }),
     });
   }
 }
