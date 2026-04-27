@@ -41,7 +41,7 @@ export const createItem = async (req, res, next) => {
 
 export const getItems = async (req, res, next) => {
   try {
-    console.log("user id : ", req.headers.user_id);
+    // console.log("user id : ", req.headers.user_id);
     const items = await itemService.getItems(req.query, req.headers.user_id);
     res.json(items);
   } catch (err) {

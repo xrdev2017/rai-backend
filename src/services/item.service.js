@@ -169,7 +169,7 @@ export const getItems = async (filters, id) => {
         category: item.category?.[0]?.name || null,   // pick first category name
         material: item.material?.[0]?.name || null,   // pick first material name
       }));
-    console.log(result);
+    // console.log(result);
     return result;
 
 
