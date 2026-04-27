@@ -243,6 +243,9 @@ export async function verifyAndroid(req, res) {
 export async function googleWebhook(req, res) {
   try {
 
+    console.log(
+      `\x1b[36m[IAP][googleWebhook][IN]\x1b[0m \x1b[90m${new Date().toISOString()}\x1b[0m`
+    );
     const messageData = req.body?.message?.data;
 
     if (!messageData) {
@@ -264,8 +267,6 @@ export async function googleWebhook(req, res) {
         message: "test ok"
       });
     }
-
-    console.log("notification: >>>>>", notification);
 
     const subNotification = notification.subscriptionNotification;
 
