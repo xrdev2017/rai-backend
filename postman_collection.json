@@ -1,0 +1,2741 @@
+{
+  "info": {
+    "name": "rai-backend Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "/auth/signup",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/signin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/signin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/forget-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/forget-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forget-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/verifyOtp",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/verifyOtp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "verifyOtp"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"otp\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/reset-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\",\n  \"confirmPassword\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/google",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/google",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/apple",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/apple",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "apple"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/signout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/signout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "signout"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/change-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"sample_value\",\n  \"newPassword\": \"sample_value\",\n  \"confirmPassword\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/auth/googleApple",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/googleApple",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "googleApple"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"profileImage\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "item": [
+        {
+          "name": "/profile/getProfile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profile/getProfile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profile",
+                "getProfile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/profile/updateProfile",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profile/updateProfile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profile",
+                "updateProfile"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "items",
+      "item": [
+        {
+          "name": "/items/CreateItem",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/CreateItem",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "CreateItem"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/items/getItems",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/getItems",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "getItems"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/items/getItem/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/getItem/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "getItem",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/items/updateItem/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/updateItem/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "updateItem",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/items/deleteItem/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/deleteItem/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "deleteItem",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/items/getAllBrands",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items/getAllBrands",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items",
+                "getAllBrands"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "DressMe",
+      "item": [
+        {
+          "name": "/DressMe/createDressMe",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DressMe/createDressMe",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DressMe",
+                "createDressMe"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"sample_value\",\n  \"style\": \"sample_value\",\n  \"season\": \"sample_value\",\n  \"groupsData\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DressMe/updateDressMe:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DressMe/updateDressMe:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DressMe",
+                "updateDressMe:id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"sample_value\",\n  \"style\": \"sample_value\",\n  \"season\": \"sample_value\",\n  \"groupsData\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DressMe/deleteDressMe/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DressMe/deleteDressMe/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DressMe",
+                "deleteDressMe",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DressMe/showDressMe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DressMe/showDressMe",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DressMe",
+                "showDressMe"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DressMe/DetailsDressMe/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DressMe/DetailsDressMe/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DressMe",
+                "DetailsDressMe",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "lookbook",
+      "item": [
+        {
+          "name": "/lookbook/CreateLookBook",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/CreateLookBook",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "CreateLookBook"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_value\",\n  \"ids\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/GetAllLookbook",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/GetAllLookbook",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "GetAllLookbook"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/GetLookbookById/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/GetLookbookById/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "GetLookbookById",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/UpdateLookbookById/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/UpdateLookbookById/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "UpdateLookbookById",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_value\",\n  \"ids\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/DeleteLookbook/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/DeleteLookbook/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "DeleteLookbook",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/AdditemstoLookbook/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/AdditemstoLookbook/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "AdditemstoLookbook",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_value\",\n  \"ids\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/lookbook/removeItemsOrOutfitToLookbook/:lookbookId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lookbook/removeItemsOrOutfitToLookbook/:lookbookId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lookbook",
+                "removeItemsOrOutfitToLookbook",
+                ":lookbookId"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_value\",\n  \"ids\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "wishlist",
+      "item": [
+        {
+          "name": "/wishlist/CreateWishList",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/wishlist/CreateWishList",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wishlist",
+                "CreateWishList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/wishlist/GetAllWishList",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/wishlist/GetAllWishList",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wishlist",
+                "GetAllWishList"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/wishlist/GetWishListById/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/wishlist/GetWishListById/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wishlist",
+                "GetWishListById",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/wishlist/AddImagesToWishlist/:id",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/wishlist/AddImagesToWishlist/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wishlist",
+                "AddImagesToWishlist",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/wishlist/DeleteWishList/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/wishlist/DeleteWishList/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wishlist",
+                "DeleteWishList",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "community",
+      "item": [
+        {
+          "name": "/community/getAllPost",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/community/getAllPost",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "community",
+                "getAllPost"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/community/ReportToPost",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/community/ReportToPost",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "community",
+                "ReportToPost"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"sample_value\",\n  \"type\": \"sample_value\",\n  \"message\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/community/ReactToPost",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/community/ReactToPost",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "community",
+                "ReactToPost"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"sample_value\",\n  \"type\": \"sample_value\",\n  \"message\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "planner",
+      "item": [
+        {
+          "name": "/planner/createPlanner",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/planner/createPlanner",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "planner",
+                "createPlanner"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outfitId\": \"sample_value\",\n  \"date\": \"sample_value\",\n  \"time\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/planner/getAllPlanner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/planner/getAllPlanner",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "planner",
+                "getAllPlanner"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/planner/getSpecificPlanner/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/planner/getSpecificPlanner/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "planner",
+                "getSpecificPlanner",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/planner/UpdatePlannerTime/:id",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/planner/UpdatePlannerTime/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "planner",
+                "UpdatePlannerTime",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"sample_value\",\n  \"time\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/planner/deletePlanner/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/planner/deletePlanner/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "planner",
+                "deletePlanner",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Feedback",
+      "item": [
+        {
+          "name": "/Feedback/createFeedback",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Feedback/createFeedback",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Feedback",
+                "createFeedback"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Feedback/GetAllFeedback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Feedback/GetAllFeedback",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Feedback",
+                "GetAllFeedback"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Feedback/GetUserFeedback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Feedback/GetUserFeedback",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Feedback",
+                "GetUserFeedback"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Feedback/deleteFeedback/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Feedback/deleteFeedback/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Feedback",
+                "deleteFeedback",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "followAndUnfollow",
+      "item": [
+        {
+          "name": "/followAndUnfollow/follow",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/followAndUnfollow/follow",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "followAndUnfollow",
+                "follow"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/followAndUnfollow/unfollow",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/followAndUnfollow/unfollow",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "followAndUnfollow",
+                "unfollow"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "blocked",
+      "item": [
+        {
+          "name": "/blocked/block",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/blocked/block",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "blocked",
+                "block"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/blocked/unblock",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/blocked/unblock",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "blocked",
+                "unblock"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/blocked/AllblockedUser",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/blocked/AllblockedUser",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "blocked",
+                "AllblockedUser"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "/Notification/GetAllNotification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Notification/GetAllNotification",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Notification",
+                "GetAllNotification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Notification/ReadNotification/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Notification/ReadNotification/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Notification",
+                "ReadNotification",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Notification/DeleteNotification/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Notification/DeleteNotification/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Notification",
+                "DeleteNotification",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "DeleteAccount",
+      "item": [
+        {
+          "name": "/DeleteAccount/delete/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DeleteAccount/delete/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DeleteAccount",
+                "delete",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DeleteAccount/deleteRequest",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DeleteAccount/deleteRequest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DeleteAccount",
+                "deleteRequest"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/DeleteAccount/AllAccount",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/DeleteAccount/AllAccount",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "DeleteAccount",
+                "AllAccount"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "privacy",
+      "item": [
+        {
+          "name": "/privacy/CheckPrivacy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/privacy/CheckPrivacy",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "privacy",
+                "CheckPrivacy"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/privacy/changePrivacy",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/privacy/changePrivacy",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "privacy",
+                "changePrivacy"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "dashboard",
+      "item": [
+        {
+          "name": "/dashboard/dashboardStats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/dashboardStats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "dashboardStats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/dashboard/UserActivity/:keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/UserActivity/:keyword",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "UserActivity",
+                ":keyword"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "report",
+      "item": [
+        {
+          "name": "/report/ReportCreate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/ReportCreate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "ReportCreate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"sample_value\",\n  \"reportType\": \"sample_value\",\n  \"targetCommunity\": \"sample_value\",\n  \"targetUser\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/ReportRead",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/ReportRead",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "ReportRead"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/Reportdelete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/Reportdelete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "Reportdelete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/ReportWithPostdelete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/ReportWithPostdelete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "ReportWithPostdelete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/ReportStatusToggle",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/ReportStatusToggle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "ReportStatusToggle"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/BannedPost",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/BannedPost",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "BannedPost"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/ReportFilter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/ReportFilter",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "ReportFilter"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sample_value\",\n  \"reportType\": \"sample_value\",\n  \"status\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/report/reports/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/report/reports/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "report",
+                "reports",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "userManagement",
+      "item": [
+        {
+          "name": "/userManagement/UserDetails",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userManagement/UserDetails",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userManagement",
+                "UserDetails"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userManagement/specificUserDetails/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userManagement/specificUserDetails/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userManagement",
+                "specificUserDetails",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userManagement/outfitItemLookbookCount/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userManagement/outfitItemLookbookCount/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userManagement",
+                "outfitItemLookbookCount",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userManagement/userStatusToggle",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userManagement/userStatusToggle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userManagement",
+                "userStatusToggle"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AdminAuth",
+      "item": [
+        {
+          "name": "/AdminAuth/signin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/signin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/signup",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/signup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/ProfileUpdate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/ProfileUpdate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "ProfileUpdate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/forgot-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "forgot-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/reset-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "reset-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"password\": \"sample_value\",\n  \"confirmPassword\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/verifyAdminEmail",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/verifyAdminEmail",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "verifyAdminEmail"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"otp\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/google",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/google",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "google"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/signout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/signout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "signout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/GetAdminProfile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/GetAdminProfile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "GetAdminProfile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminAuth/googleApple",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminAuth/googleApple",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminAuth",
+                "googleApple"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_value\",\n  \"profileImage\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "style",
+      "item": [
+        {
+          "name": "/style/getAllStyle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/style/getAllStyle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "style",
+                "getAllStyle"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/style/createStyle",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/style/createStyle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "style",
+                "createStyle"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/style/UpdateStyle/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/style/UpdateStyle/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "style",
+                "UpdateStyle",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/style/DeleteStyle/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/style/DeleteStyle/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "style",
+                "DeleteStyle",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/style/CountEachStyle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/style/CountEachStyle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "style",
+                "CountEachStyle"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "/Category/getAllCategory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Category/getAllCategory",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Category",
+                "getAllCategory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Category/createCategory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Category/createCategory",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Category",
+                "createCategory"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Category/UpdateCategory/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Category/UpdateCategory/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Category",
+                "UpdateCategory",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Category/DeleteCategory/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Category/DeleteCategory/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Category",
+                "DeleteCategory",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Metarial",
+      "item": [
+        {
+          "name": "/Metarial/getAllMetarial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Metarial/getAllMetarial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Metarial",
+                "getAllMetarial"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Metarial/createMetarial",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Metarial/createMetarial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Metarial",
+                "createMetarial"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Metarial/UpdateMetarial/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Metarial/UpdateMetarial/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Metarial",
+                "UpdateMetarial",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/Metarial/DeleteMetarial/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Metarial/DeleteMetarial/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Metarial",
+                "DeleteMetarial",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "affiliateData",
+      "item": [
+        {
+          "name": "/affiliateData/notifications",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/affiliateData/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "affiliateData",
+                "notifications"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/affiliateData/getnotifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/affiliateData/getnotifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "affiliateData",
+                "getnotifications"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/affiliateData/notificationsById/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/affiliateData/notificationsById/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "affiliateData",
+                "notificationsById",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/affiliateData/notifications/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/affiliateData/notifications/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "affiliateData",
+                "notifications",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"sample_value\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/affiliateData/notifications/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/affiliateData/notifications/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "affiliateData",
+                "notifications",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AdminNotification",
+      "item": [
+        {
+          "name": "/AdminNotification/GetAllAdminNotification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminNotification/GetAllAdminNotification",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminNotification",
+                "GetAllAdminNotification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/AdminNotification/ReadAdminNotification/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/AdminNotification/ReadAdminNotification/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "AdminNotification",
+                "ReadAdminNotification",
+                ":id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "userInfoById",
+      "item": [
+        {
+          "name": "/userInfoById/SpecificUser/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userInfoById/SpecificUser/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userInfoById",
+                "SpecificUser",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userInfoById/items/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userInfoById/items/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userInfoById",
+                "items",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userInfoById/outfits/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userInfoById/outfits/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userInfoById",
+                "outfits",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userInfoById/lookbooks/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/userInfoById/lookbooks/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userInfoById",
+                "lookbooks",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "mycommunity",
+      "item": [
+        {
+          "name": "/mycommunity/following",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mycommunity/following",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mycommunity",
+                "following"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/mycommunity/followers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mycommunity/followers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mycommunity",
+                "followers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/mycommunity/non-connected",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mycommunity/non-connected",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mycommunity",
+                "non-connected"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "usage",
+      "item": [
+        {
+          "name": "/usage/getUsageStats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usage/getUsageStats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usage",
+                "getUsageStats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/usage/getMostWardOutfits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usage/getMostWardOutfits",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usage",
+                "getMostWardOutfits"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/usage/getColorCount",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usage/getColorCount",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usage",
+                "getColorCount"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

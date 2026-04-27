@@ -31,10 +31,6 @@ async function appendSubscriptionHistory(data) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Subscription tier → generation credit limits
-// vto.limit = 0 means VTO is blocked for that tier (frontend shows upgrade prompt)
-// ─────────────────────────────────────────────────────────────────────────────
 const TIER_CREDITS = {
   // Monthly plans
   rai_basic: { aiStylist: 30, vto: 0 },
@@ -162,10 +158,6 @@ async function applyCreditsForTierIos(userId, productId, status) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/ios
-// Body: { transactionId: string }
-// ─────────────────────────────────────────────────────────────────────────────
 export async function verifyIos(req, res) {
   const { transactionId } = req.body;
 
@@ -275,14 +267,12 @@ export async function verifyIos(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/android
-// Body: { purchaseToken, productId, packageName }
-// ─────────────────────────────────────────────────────────────────────────────
 export async function verifyAndroid(req, res) {
   try {
     const { purchaseToken, productId, packageName } = req.body;
     const userId = req.headers.user_id;
+
+    console.log("verifyAndroid: >>>>>", { purchaseToken, productId, packageName, userId });
 
     const result = await verifyAndroidSubscription(
       packageName,
@@ -379,11 +369,6 @@ export async function verifyAndroid(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/webhook/apple
-// Apple App Store Server Notifications v2 (signedPayload = signed JWT)
-// Apple sends a JSON body: { signedPayload: "<JWT>" }
-// ─────────────────────────────────────────────────────────────────────────────
 export async function appleWebhook(req, res) {
   try {
     const { signedPayload } = req.body;
@@ -550,11 +535,6 @@ export async function appleWebhook(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/webhook/google
-// Google Real-Time Developer Notifications via Pub/Sub
-// Body: { message: { data: "<base64 encoded JSON>" } }
-// ─────────────────────────────────────────────────────────────────────────────
 export async function googleWebhook(req, res) {
   try {
 
@@ -787,7 +767,6 @@ export async function googleWebhook(req, res) {
 // Restore Purchase — shared constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Re-verify with the store if the last verification is older than this (ms). */
 const STALE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
 
 function isStale(lastVerifiedAt) {
@@ -795,16 +774,6 @@ function isStale(lastVerifiedAt) {
   return Date.now() - new Date(lastVerifiedAt).getTime() > STALE_THRESHOLD_MS;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/restore/ios
-// Body: { transactionId: string }
-//
-// Use cases: app reinstall, new device, account switch.
-// Flow:
-//   1. Look up the subscription in DB by transactionId.
-//   2. If found and fresh  → re-link to the current user, return cached data.
-//   3. If not found/stale  → re-verify with Apple, upsert, re-link, return.
-// ─────────────────────────────────────────────────────────────────────────────
 export async function restoreIos(req, res) {
   const { transactionId } = req.body;
   const userId = req.headers.user_id || null;
@@ -953,16 +922,6 @@ export async function restoreIos(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /verify/restore/android
-// Body: { purchaseToken: string, productId: string, packageName: string }
-//
-// Use cases: app reinstall, new device, account switch.
-// Flow:
-//   1. Look up the subscription in DB by purchaseToken.
-//   2. If found and fresh  → re-link to the current user, return cached data.
-//   3. If not found/stale  → re-verify with Google Play, upsert, re-link, return.
-// ─────────────────────────────────────────────────────────────────────────────
 export async function restoreAndroid(req, res) {
   const { purchaseToken, productId, packageName } = req.body;
   const userId = req.headers.user_id || null;
