@@ -461,7 +461,7 @@ export async function googleWebhook(req, res) {
     /*
     Update Credits/User State
     */
-    if (updatedSub?.userId) {
+    if (updatedSub?.userId && updatedSub.status !== "will_expire") {
       await applyCreditsForTier(
         updatedSub.userId,
         updatedSub.productId,
