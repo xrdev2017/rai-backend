@@ -340,12 +340,37 @@ export async function googleWebhook(req, res) {
     let finalStatus = "unknown";
 
     if (googleData) {
-      finalStatus = googleData.status;
+      // finalStatus = googleData.status;
+      if (googleData.expiryTimeMillis < Date.now()) {
+        finalStatus = "expired";
+      } else if (!googleData.autoRenewing) {
+        finalStatus = "cancelled"; // active but won't renew
+      } else {
+        finalStatus = "active";
+      }
     } else {
-      const expiredTypes = [3, 12, 13];
-      finalStatus = expiredTypes.includes(notificationType)
-        ? "expired"
-        : "unknown";
+      // const expiredTypes = [3, 12, 13];
+      // finalStatus = expiredTypes.includes(notificationType)
+      //   ? "expired"
+      //   : "unknown";
+
+      switch (notificationType) {
+        case 2: // RENEWED
+          finalStatus = "active";
+          break;
+      
+        case 3: // CANCELED
+          finalStatus = "will_expire"; // or "CANCELED"
+          break;
+      
+        case 12: // EXPIRED
+        case 13: // REVOKED
+          finalStatus = "expired";
+          break;
+      
+        default:
+          finalStatus = googleData?.status || "unknown";
+      }
     }
 
 

@@ -38,6 +38,7 @@ import MyCommunityRoute from "./routes/MyCommunity.routes.js";
 import usageRoute from "./routes/usage.routes.js";
 import iapRoutes from "./routes/iap.routes.js";
 import VirtualTryOnRoutes from "./routes/VirtualTryOn.routes.js";
+import { startSubscriptionStatusCron } from "./utils/cronjob.js";
 
 dotenv.config();
 const app = express();
@@ -118,7 +119,10 @@ app.use("/virtualTryOn", VirtualTryOnRoutes);
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
+  .then(() => {
+    console.log("MongoDB Connected");
+    startSubscriptionStatusCron();
+  })
   .catch((err) => console.error(err));
 
 // Start Server

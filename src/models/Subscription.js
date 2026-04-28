@@ -43,7 +43,7 @@ const SubscriptionSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["active", "expired", "cancelled", "unknown"],
+      enum: ["active", "expired", "cancelled", "will_expire", "unknown"],
       default: "unknown"
     },
 
