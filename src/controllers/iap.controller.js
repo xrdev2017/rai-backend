@@ -342,11 +342,19 @@ export async function googleWebhook(req, res) {
     console.log("googleData: >>>>>", googleData);
 
     if (googleData) {
-      // finalStatus = googleData.status;
-      if (googleData.expiryTimeMillis < Date.now()) {
+      const nowMs = Date.now();
+      const expiryMs = Number(googleData.expiryTimeMillis);
+      const isExpired = Number.isFinite(expiryMs) ? expiryMs < nowMs : false;
+
+      // Play cancel means subscription remains valid until expiry.
+      if (isExpired) {
         finalStatus = "expired";
-      } else if (!googleData.autoRenewing) {
-        finalStatus = "cancelled"; // active but won't renew
+      } else if (
+        googleData.status === "cancelled" ||
+        notificationType === 3 ||
+        googleData.autoRenewing === false
+      ) {
+        finalStatus = "will_expire";
       } else {
         finalStatus = "active";
       }
