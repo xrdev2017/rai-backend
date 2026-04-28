@@ -32,7 +32,7 @@ const SubscriptionHistorySchema = new Schema(
 
     status: {
       type: String,
-      enum: ["active", "expired", "cancelled", "unknown"],
+      enum: ["active", "expired", "cancelled", "unknown", "will_expire"],
       default: "unknown",
     },
 
