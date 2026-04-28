@@ -339,6 +339,8 @@ export async function googleWebhook(req, res) {
 
     let finalStatus = "unknown";
 
+    console.log("googleData: >>>>>", googleData);
+
     if (googleData) {
       // finalStatus = googleData.status;
       if (googleData.expiryTimeMillis < Date.now()) {
@@ -373,7 +375,7 @@ export async function googleWebhook(req, res) {
       }
     }
 
-
+    console.log("finalStatus===========================: >>>>>", finalStatus);
     /*
     Upsert Subscription
     */
