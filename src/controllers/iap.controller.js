@@ -635,12 +635,29 @@ export async function verifyIos(req, res) {
 
     const originalTransactionId = result.originalTransactionId || result.transactionId;
 
-    const existingSub = await Subscription.findOne({
+    const existingSubQuery = {
       platform: "ios",
-      userId: requestedUserId,
-    });
+      $or: [
+        { originalTransactionId },
+        { transactionId: originalTransactionId },
+        { transactionId: result.transactionId },
+      ],
+    };
+
+    if (requestedUserId) {
+      existingSubQuery.$or.push({ userId: requestedUserId });
+    }
+
+    const existingSub = await Subscription.findOne(existingSubQuery);
 
     const resolvedUserId = requestedUserId || existingSub?.userId || undefined;
+
+    if (!resolvedUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "user_id header is required to create a new iOS subscription",
+      });
+    }
 
     // Derive status: active if expiresDate is in the future, else expired
     const now = Date.now();
@@ -672,6 +689,7 @@ export async function verifyIos(req, res) {
         { new: true }
       );
     } else {
+      subscriptionData.userId = resolvedUserId;
       updatedSub = await Subscription.create(subscriptionData);
     }
 
