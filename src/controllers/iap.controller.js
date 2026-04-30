@@ -631,6 +631,8 @@ export async function verifyIos(req, res) {
     // result = decoded Apple transaction object (jwt.decode of signedTransactionInfo)
     const result = await verifyIosSubscription(transactionId);
 
+    console.log("Apple ios result : ", result);
+
     const requestedUserId = req.headers.user_id || null;
 
     const originalTransactionId = result.originalTransactionId || result.transactionId;
@@ -771,6 +773,13 @@ export async function appleWebhook(req, res) {
     }
 
     const { notificationType, subtype, data } = notificationPayload.payload;
+
+    console.log(
+      "\x1b[35m%s\x1b[0m", // purple label
+      "🍎 Apple webhook received:",
+      "\x1b[36m%s\x1b[0m", // cyan object
+      JSON.stringify({ notificationType, subtype, data }, null, 2)
+    );
 
     const transactionInfo = data?.signedTransactionInfo
       ? jwt.decode(data.signedTransactionInfo)
