@@ -776,20 +776,21 @@ export async function appleWebhook(req, res) {
 
     const { notificationType, subtype, data } = notificationPayload.payload;
 
+    
+    const transactionInfo = data?.signedTransactionInfo
+    ? jwt.decode(data.signedTransactionInfo)
+    : null;
+
+    const renewalInfo = data?.signedRenewalInfo
+    ? jwt.decode(data.signedRenewalInfo)
+    : null;
+    
     console.log(
       "\x1b[35m%s\x1b[0m", // purple label
       "🍎 Apple webhook received:",
       "\x1b[36m%s\x1b[0m", // cyan object
-      JSON.stringify({ notificationType, subtype, data }, null, 2)
+      JSON.stringify({ transactionInfo, renewalInfo }, null, 2)
     );
-
-    const transactionInfo = data?.signedTransactionInfo
-      ? jwt.decode(data.signedTransactionInfo)
-      : null;
-
-    const renewalInfo = data?.signedRenewalInfo
-      ? jwt.decode(data.signedRenewalInfo)
-      : null;
 
     const originalTransactionId =
       transactionInfo?.originalTransactionId ||
