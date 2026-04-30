@@ -635,6 +635,8 @@ export async function verifyIos(req, res) {
 
     const requestedUserId = req.headers.user_id || null;
 
+    console.log("Requested user id >>>>>>>>>>>>>>>>>>>>> ", requestedUserId);
+
     const originalTransactionId = result.originalTransactionId || result.transactionId;
 
     const existingSubQuery = {
@@ -828,6 +830,8 @@ export async function appleWebhook(req, res) {
     });
 
     const userId = existingSub?.userId || undefined;
+
+    console.log("Apple webhook user id >>>>>>>>>>>>>>>>>.. ", userId)
 
     const transactionId = transactionInfo?.transactionId || existingSub?.transactionId || originalTransactionId;
     const productId =
